@@ -52,13 +52,10 @@ func (p *VercelMembers) Process(c Config) (*Artifact, error) {
 
 	// Find the members
 	doc.Find("div[data-geist-entity]").Each(func(i int, s *goquery.Selection) {
-		fmt.Printf("attr=%s\n", s.AttrOr("data-testid", "unknown"))
-
 		email := s.Find("div[type=secondary]").Text()
 		roles := []string{}
 
 		s.Find("option").Each(func(i int, opt *goquery.Selection) {
-			fmt.Printf("opt=%s\n", opt.Text())
 			roles = append(roles, opt.Text())
 		})
 
@@ -78,6 +75,10 @@ func (p *VercelMembers) Process(c Config) (*Artifact, error) {
 				}
 			})
 
+			if len(vals) == 0 {
+				// fmt.Printf("%s has no roles (unaccepted invite?)\n", email)
+				return
+			}
 			roles = append(roles, vals[0])
 		}
 
